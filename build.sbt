@@ -2,9 +2,15 @@ scalaVersion  := "2.11.8"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
+resolvers ++= Seq(
+  Resolver.sonatypeRepo("releases"),
+  "Twitter Maven" at "https://maven.twttr.com"
+)
+
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2-core" % "3.6.2",
-  "org.specs2" %% "specs2-scalacheck" % "3.6.2"
+  "com.twitter.finatra" %% "finatra-http" % "2.1.6"
+  "org.specs2" %% "specs2-core" % "3.6.2" % "test",
+  "org.specs2" %% "specs2-scalacheck" % "3.6.2" % "test"
 )
 
 scalariformSettings
@@ -16,8 +22,8 @@ writeFile in Runtime := {
   val f = file(".") / "FILE.txt"
   val log = streams.value.log
   val charset = java.nio.charset.Charset.forName("US-ASCII")
-  val nLines = 1024
   val lineLength = 1024 - IO.Newline.length
+  val nLines = 1024 * 1000 // 1 GB
 
   def genChar = scala.util.Random.nextPrintableChar
 
