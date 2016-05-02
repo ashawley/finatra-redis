@@ -8,7 +8,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.twitter.finatra" %% "finatra-http" % "2.1.6"
+  "com.twitter.finatra" %% "finatra-http" % "2.1.6" exclude ("org.slf4j", "log4j-over-slf4j") exclude ("javax.servlet", "servlet-api"),
+  "org.apache.spark" %% "spark-core" % "1.6.1",
   "org.specs2" %% "specs2-core" % "3.6.2" % "test",
   "org.specs2" %% "specs2-scalacheck" % "3.6.2" % "test"
 )
