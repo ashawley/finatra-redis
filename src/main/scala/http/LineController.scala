@@ -5,18 +5,22 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.request.RouteParam
 
-class Lineervice {
-  def go(r: Request) = println("Doing it!")
-}
-
 case class LineRequest(
   @RouteParam num: Int
 )
 
 class LineController extends Controller {
 
+  get("/") { _: Request =>
+    response.ok.html("<h1>Line Server</h1>")
+  }
+
+  get("/lineParam/:num") { request: Request =>
+    request.params("num") // Text
+  }
+
   get("/lineRequest/:num") { request: LineRequest =>
-    request
+    request // JSON
   }
 
   get("/line/:num") { request: LineRequest =>
