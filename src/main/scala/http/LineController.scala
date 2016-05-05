@@ -1,6 +1,11 @@
-package com.github.com.ashawley
+/**
+ * LineController.scala --- Finatra routes
+ */
+
+package com.github.ashawley
 package http
 
+import com.google.inject.Inject
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.request.RouteParam
@@ -9,7 +14,9 @@ case class LineRequest(
   @RouteParam num: Int
 )
 
-class LineController extends Controller {
+class LineController @Inject() (
+    textFile: TextFileLike
+) extends Controller {
 
   get("/") { _: Request =>
     response.ok.html("<h1>Line Server</h1>")
@@ -24,7 +31,7 @@ class LineController extends Controller {
   }
 
   get("/line/:num") { request: LineRequest =>
-    Some("line") match {
+    textFile.line(request.num) match {
       case Some(l: String) => {
         response.
           ok

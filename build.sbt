@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.3" % "test",
   "org.specs2" %% "specs2-core" % "3.6.2" % "test",
   "org.specs2" %% "specs2-junit" % "3.6.2" % "test",
+  "org.specs2" %% "specs2-mock" % "3.6.2" % "test",
   "org.specs2" %% "specs2-scalacheck" % "3.6.2" % "test"
 )
 
