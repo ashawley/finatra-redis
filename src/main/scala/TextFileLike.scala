@@ -4,6 +4,8 @@
 
 package com.github.ashawley
 
+import com.twitter.util.Future
+
 trait TextFileLike {
-  def line(x: Long): Option[String]
+  def line(x: Long): Future[Option[String]]
 }
