@@ -1,6 +1,6 @@
 scalaVersion  := "2.11.8"
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
+scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8", "-language:implicitConversions")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -10,6 +10,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.twitter.finatra" %% "finatra-http" % "2.1.6",
   "com.twitter.finatra" %% "finatra-http" % "2.1.6" % "test" classifier "tests",
+  "com.twitter" %% "finagle-redis" % "6.34.0",
   "com.google.inject.extensions" % "guice-testlib" % "4.0" % "test",
   "com.twitter.inject" %% "inject-server" % "2.1.6" % "test",
   "com.twitter.inject" %% "inject-server" % "2.1.6" % "test" classifier "tests",
