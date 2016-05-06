@@ -1,5 +1,5 @@
 /**
- * File.scala --- Randomly generate  file of min-max lines and line length
+ * File.scala --- Randomly generate file of min-max lines and line length
  *
  * {{{
  * scala> val randFile = new com.github.ashawley.random.File(0, 78, 1, 2)
