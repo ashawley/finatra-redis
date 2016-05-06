@@ -17,9 +17,6 @@ object TextFileModule extends TwitterModule {
   @Provides
   def provideFile: TextFileLike = {
     val file = fileFlag()
-    print(s"Loading ${file}...")
-    val textFile = new spark.TextFile(file)
-    println("done")
-    textFile
+    new redis.TextFile(file)
   }
 }
