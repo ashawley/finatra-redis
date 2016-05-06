@@ -14,14 +14,14 @@ import org.scalacheck.Gen
 trait JavaFile {
 
   val genFileNameStem =
-    Gen.alphaStr.suchThat(3 to 127 contains _.length)
+    Gen.alphaStr.suchThat(3 to 251 contains _.length)
 
   implicit def arbFile: Arbitrary[java.io.File] = Arbitrary {
     for {
-      prefix <- genFileNameStem
+      // prefix <- genFileNameStem
       suffix <- genFileNameStem
     } yield {
-      val f = java.io.File.createTempFile(prefix, suffix)
+      val f = java.io.File.createTempFile("gen", suffix)
       f.deleteOnExit
       f
     }
