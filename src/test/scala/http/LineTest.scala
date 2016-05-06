@@ -1,3 +1,7 @@
+/**
+ * LineTest.scala --- Integration test of line server
+ */
+
 package com.github.ashawley
 package http
 

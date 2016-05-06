@@ -1,3 +1,7 @@
+/**
+ * FileSpec.scala --- Property test of random file generator
+ */
+
 package com.github.ashawley
 package random
 
