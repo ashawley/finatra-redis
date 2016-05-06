@@ -1,9 +1,12 @@
+/**
+ * TextFileSpec.scala --- Property testing of Spark text file
+ */
+
 package com.github.ashawley
 package spark
 
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
-import org.apache.spark.rdd.RDD
+import com.twitter.util.Await
+import com.twitter.conversions.time._
 
 import org.scalacheck.Properties
 import org.scalacheck.Prop
@@ -13,23 +16,13 @@ class TextFileSpec extends Properties("spark.TextFile")
     with generator.JavaFile
     with generator.RandomFile {
 
-  property("count") = {
+  property("line(x)") = {
     Prop.forAll { (f: java.io.File, randFile: random.File) =>
       randFile.write(f)
-      val nLines = SparkLocal.sc.textFile(f.getCanonicalPath).count
-      (randFile.lineMin <= nLines && nLines <= randFile.lineMax)
-    }
-  }
-
-  property("lookup(x)") = {
-    Prop.forAll { (f: java.io.File, randFile: random.File) =>
-      randFile.write(f)
-      val lines: RDD[String] = SparkLocal.sc.textFile(f.getCanonicalPath)
-      val lineIdx: RDD[(Long, String)] = lines.zipWithIndex.map {
-        case (t, k) => (k, t)
-      }
+      val textFile = new TextFile(f)
       val x = randFile.randNumLine
-      val line: String = lineIdx.lookup(x - 1).head
+      val future = textFile.line(x - 1)
+      val line: String = Await.result(future, 1.second).get
       val lineLength: Int = line.length
       (randFile.colMin <= lineLength && lineLength <= randFile.colMax)
     }
