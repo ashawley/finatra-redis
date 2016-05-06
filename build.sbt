@@ -38,7 +38,7 @@ writeFile in Runtime := {
   val log = streams.value.log
   val charset = java.nio.charset.Charset.forName("US-ASCII")
   val lineLength = 1024 - IO.Newline.length
-  val nLines = 1024 * 1000 // 1 GB
+  val nLines = 1024 // 1 MB
 
   def genChar = scala.util.Random.nextPrintableChar
 
