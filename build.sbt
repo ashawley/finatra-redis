@@ -3,6 +3,7 @@ scalaVersion  := "2.11.8"
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8", "-language:implicitConversions")
 
 resolvers ++= Seq(
+  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   Resolver.sonatypeRepo("releases"),
   "Twitter Maven" at "https://maven.twttr.com"
 )
@@ -39,32 +40,6 @@ writeFile in Runtime := {
   val charset = java.nio.charset.Charset.forName("US-ASCII")
   val lineLength = 1024 - IO.Newline.length
   val nLines = 1024 // 1 MB
-
-  def genChar = scala.util.Random.nextPrintableChar
-
-  def isNewline(c: Char) = "\n\r".contains(c)
-
-  if (f.isFile)
-    IO.delete(f)
-  
-  val stream = Stream.fill(nLines) {
-    val s = Stream.fill(lineLength)(genChar).filterNot(isNewline).mkString
-    val line = s + IO.Newline
-    IO.append(f, line, charset)
-  }
-  stream.force
-  log.info(s"Wrote file to $f")
-}
-
-lazy val indexFile = taskKey[Unit]("Index the lines of a file")
-
-indexFile := {
-
-  val f = file(".") / "FILE.txt"
-  val log = streams.value.log
-  val charset = java.nio.charset.Charset.forName("US-ASCII")
-  val nLines = 1024
-  val lineLength = 1024 - IO.Newline.length
 
   def genChar = scala.util.Random.nextPrintableChar
 
