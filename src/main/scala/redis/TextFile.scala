@@ -27,11 +27,11 @@ class TextFile(file: java.io.File) extends TextFileLike {
   // val client = Client("127.0.0.1:6379")
   val client = Client(RedisCluster.hostAddresses())
 
-  val load: Future[Unit] = Future.join {
+  val asyncLoad: Future[Unit] = Future.join {
     scala.io.Source.fromFile(file).getLines.filterNot(_.isEmpty).zipWithIndex.map {
-      case (v, k) => (k -> v)
+      case (line, num) => (num -> line)
     }.map {
-      case (k, v) => client.set(k.toString, v)
+      case (num, line) => client.set(num.toString, line)
     }.grouped(2048).map {
       // Sending everything to twitter.util.Future.join(:Seq[Future])
       // will cause an OOM, so chunking to Seq of 2048 helps.
@@ -39,18 +39,20 @@ class TextFile(file: java.io.File) extends TextFileLike {
     }.toSeq
   }
 
-  // val load: Future[Unit] = Future.join(loads)
-
   print(s"Loading ${file}...")
 
-  load.onSuccess { _ =>
+  asyncLoad.onSuccess { _ =>
     println("Done")
   }
-  load.onFailure { _ =>
+  asyncLoad.onFailure { _ =>
     println("FAIL!")
   }
 
-  def line(x: Long): Future[Option[String]] = load.flatMap { _ =>
-    client.get((x - 1).toString).map(_.map(cb2s(_)))
+  def line(x: Long): Future[Option[String]] = asyncLoad.flatMap { _: Unit =>
+    client.get((x - 1).toString).map { lineOpt =>
+      lineOpt.map { line =>
+        cb2s(line)
+      }
+    }
   }
 }

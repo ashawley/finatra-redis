@@ -32,8 +32,8 @@ class LineController @Inject() (
   }
 
   get("/line/:num") { request: LineRequest =>
-    textFile.line(request.num).map {
-      _ match {
+    textFile.line(request.num).map { lineOpt =>
+      lineOpt match {
         case Some(l: String) => {
           response.
             ok
