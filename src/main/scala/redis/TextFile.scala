@@ -28,8 +28,11 @@ class TextFile(file: java.io.File) extends TextFileLike {
   val client = Client(RedisCluster.hostAddresses())
 
   val asyncLoad: Future[Unit] = Future.join {
-    scala.io.Source.fromFile(file).getLines.filterNot(_.isEmpty).zipWithIndex.map {
+    scala.io.Source.fromFile(file).getLines.zipWithIndex.map {
       case (line, num) => (num -> line)
+    }.filter {
+      // TODO: Netty v4 will support an empty ChannelBuffer
+      case (num, line) => !line.isEmpty
     }.map {
       case (num, line) => client.set(num.toString, line)
     }.grouped(2048).map {
