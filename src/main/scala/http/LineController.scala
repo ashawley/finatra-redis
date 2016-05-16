@@ -12,7 +12,7 @@ import com.twitter.finatra.request.RouteParam
 import com.twitter.util.Future
 
 case class LineRequest(
-  @RouteParam num: Int
+  @RouteParam num: Long
 )
 
 class LineController @Inject() (
