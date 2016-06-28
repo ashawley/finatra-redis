@@ -11,7 +11,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.twitter.finatra" %% "finatra-http" % "2.1.6",
   "com.twitter.finatra" %% "finatra-http" % "2.1.6" % "test" classifier "tests",
-  "com.twitter" %% "finagle-redis" % "6.34.0",
+  "com.twitter" %% "finagle-redis" % "6.35.0",
   "com.google.inject.extensions" % "guice-testlib" % "4.0" % "test",
   "com.twitter.inject" %% "inject-server" % "2.1.6" % "test",
   "com.twitter.inject" %% "inject-server" % "2.1.6" % "test" classifier "tests",
@@ -21,12 +21,12 @@ libraryDependencies ++= Seq(
   "com.twitter.inject" %% "inject-core" % "2.1.6" % "test" classifier "tests",
   "com.twitter.inject" %% "inject-modules" % "2.1.6" % "test",
   "com.twitter.inject" %% "inject-modules" % "2.1.6" % "test" classifier "tests",
-  "org.mockito" % "mockito-core" % "1.9.5" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.3" % "test",
-  "org.specs2" %% "specs2-core" % "3.6.2" % "test",
-  "org.specs2" %% "specs2-junit" % "3.6.2" % "test",
-  "org.specs2" %% "specs2-mock" % "3.6.2" % "test",
-  "org.specs2" %% "specs2-scalacheck" % "3.6.2" % "test"
+  "org.mockito" % "mockito-core" % "1.10.19" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+  "org.specs2" %% "specs2-core" % "3.8.4" % "test",
+  "org.specs2" %% "specs2-junit" % "3.8.4" % "test",
+  "org.specs2" %% "specs2-mock" % "3.8.4" % "test",
+  "org.specs2" %% "specs2-scalacheck" % "3.8.4" % "test"
 )
 
 scalariformSettings
