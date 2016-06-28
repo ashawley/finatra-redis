@@ -1,16 +1,20 @@
 ## Line Server
 
+Serve individual lines of an immutable text file.
+
+- `GET /lines/<line number>`
+ - HTTP 200 and the text of the line
+ - HTTP 404 if the line is beyond the end of the file
+
 Requires [SBT](http://www.scala-sbt.org/download.html) to compile and run the system.
 
-### How does your system work?
+A text file is loaded line-by-line in to Redis, an in-memory key store server, using zero-indexed keys.  Redis uses a fast hash indexing function for retrieval.
 
-The file is loaded line-by-line to Redis, an in-memory key store server, using zero-indexed keys.  Redis uses a fast hash indexing function for retrieval.
-
-Since, the Redis client library available from Twitter Finagle is used.  It can launch a Redis server/cluster in the JVM.  That is what it is done in the code by default.  However, it is only for testing, and it is not performant.
+The Redis client library available from Twitter Finagle is used.  It can launch a Redis server/cluster within the JVM.  This is done in the code by default.  However, it is only for testing, and it is also not performant.
 
 An SBT task will create a large file of random ASCII characters.  It is written using Scala (and Java libraries) and uses some of SBT's handy API.
 
-### How will your system perform with a 1 GB file? a 10 GB file? a 100 GB file?
+### Large files
 
 Retrieval from Redis uses its hash table implementation.  In the worst case a lookup is O(_n_) for n records.  It is O(_1_), or constant, for average lookups -- assuming Redis is behaving.   Redis will misbehave with large data, but not before running out of memory.  Redis offers partitioning to distribute data across a cluster.  There is no evidence that Redis uses a binary search tree, which would give retrievals O(_log n_) in the worse case.
 
@@ -18,7 +22,7 @@ The space complexity for hash tables is O(_n_) as well.  Redis offers distribute
 
 Creating a large file of random characters is a task in SBT.  It will run in O(_n_) time, but only constants memory since it is built using the stream implementation from Scala's collections library.  I verified that writing a file works even when memory was constrained.  When running the task in a JVM that is constrained to a ~88MB memory footprint, it takes about 40 minutes to create a 1GB file -- even with an SSD drive.  When constrained to the default JVM setting of 2GB, it takes about 4 minutes.  Presumably, the JVM's garbage collection is at fault for the 10x increase.
 
-### How will your system perform with 100 users? 10000 users? 1000000 users?
+### Performance
 
 On my local machine, testing it with ApacheBench with 2000 requests at a time with concurrent "users" seemed to only show that I couldn't find the upper bound of users before overloading the system socket limits:
 
@@ -44,7 +48,7 @@ done
 
 According to ApacheBench, the waiting time to connect did increase by 100% from 225 to 250 concurrent connections.  The Finagle/Twitter/Netty server runs about 10 threads by default.  This produces a JVM that requires less than a gigabyte of memory.  Scaling to 10,00 users will require tuning memory consumption on the Web server and the JVM within the limits of the machine to the maximum servable connections.
 
-### What documentation, websites, papers, etc did you consult in doing this assignment?
+### Notes
 
 [Blog post on generating random strings in Scala](http://alvinalexander.com/scala/creating-random-strings-in-scala)
 
@@ -82,9 +86,9 @@ Stackoverflow posts related to SBT tasks.
 
 [Twitter Scala School: Finagle](https://twitter.github.io/scala_school/finagle.html)
 
-### What third-party libraries or other tools does the system use? How did you choose each library or framework you used?
+### Dependencies
 
-I chose Scala 2.11.8 on the JVM.  I use Java 1.8 locally.  I've used other Web frameworks in Scala, but decided to try version 2.1 of Twitter Finatra.  This was a first for me.  It is an HTTP framework similar to Ruby's Sinatra, and Scala's Akka Http (previously Spray).
+The code use Scala 2.11.8 on the JVM.  I run it on Java 1.8.  I've used other Web frameworks in Scala, but decided to try version 2.1 of Twitter Finatra.  This was a first for me.  It is an HTTP framework similar to Ruby's Sinatra, and Scala's Akka Http (previously Spray).
 
 Twitter Finatra is implemented on top of the Scala-based HTTP server, Twitter Server, and uses the Twitter Finagle library.  I used the Redis client (and server) available from Finagle 6.34.  I connected to Redis 2.8.19 installed on my machine.
 
@@ -96,20 +100,18 @@ The simple build tool, SBT version 0.13.8, is used to launch compile the code, l
 
 An early implementation used Apache Spark 3.6 to store the file.  Spark standalone cluster on the JVM was extremely adept at loading the data set quickly.  Retrieving a single record by an index is not a use case, however.
 
-### How long did you spend on this exercise? If you had unlimited more time to spend on this, how would you spend it and how would you prioritize each item?
+### TODO
 
-I spent about 3 evenings and part of a rainy weekend coding, so between 15-20 hours.  A lot of it was updating my understanding of how to write unit tests, use frameworks and learn Scala libraries that are new to me.  If I had unlimited time:
-
-1. Assuming this was a real product, I'd probably work on deploying it to continuous integration in a PaaS like Heroku.  It's important to get feedback on the full software life cycle early than continue re-factoring the code on your local machine.
-2. Configure Redis server connection with a command-line flag
-3. Determine the steps to build a (large) file that is available for ingestion in production.
+1. Deploy it to continuous integration in a PaaS like Heroku.
+2. Configure Redis server connection with a command-line flag.
+3. Determine the steps to build a (large) file.
 4. Determine how to load a (large) file in production.
 5. Try to load a (large) file to a cluster of Redis servers.
 6. Try reading from a cluster of Redis servers.
 7. The creating of a large file is done in constant memory, slurping the file in to Redis should be as well.
 8. Write more unit tests that capture the specification
 
-### If you were to critique your code, what would you have to say about it?
+### FIXME
 
 1. The use of dependency injection is effective, but could the system be written in such a way that any line retrieving service could be swapped in or out with the Web service?
 2. Good use of unit tests, but how much confidence is in the automated tests about the complete application?  Should there be more error cases and use cases?
